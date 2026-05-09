@@ -15,12 +15,12 @@ def verify():
     size = 500
     A, B = generate_input(size)
     
-    print("запуск c++ программы...")
+    print("running c++ program...")
     exe = "./matmul.exe" if os.name == "nt" else "./matmul"
     subprocess.run([exe], check=True)
     
     # чтение результата (пропускаем только первую строку с N)
-    print("чтение результатов...")
+    print("reading results...")
     C_cpp = np.loadtxt("matrixC.txt", skiprows=1)
     
     # эталонное умножение

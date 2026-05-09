@@ -56,6 +56,6 @@ int main() {
     writeMatrix("matrixC.txt", C, N);
 
     // выводим время в консоль, а не в файл
-    cout << "расчет окончен. время: " << elapsed.count() << " мс" << endl;
+cout << "calculation finished. time: " << elapsed.count() << " ms" << endl;
     return 0;
 }
