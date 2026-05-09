@@ -78,3 +78,5 @@ matmul
 *.csv
 
 .vscode/
+
+!lab2/results.csv
