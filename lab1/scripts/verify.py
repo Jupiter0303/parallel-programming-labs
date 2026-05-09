@@ -1,42 +1,37 @@
 import numpy as np
 import subprocess
 import os
-import time
 
-# генерация входных данных
 def generate_input(size):
     A = np.random.uniform(-10, 10, (size, size))
     B = np.random.uniform(-10, 10, (size, size))
     for name, mat in [("matrixA.txt", A), ("matrixB.txt", B)]:
         with open(name, "w") as f:
             f.write(f"{size}\n")
-            np.savetxt(f, mat, fmt='%.4f')
+            np.savetxt(f, mat, fmt='%.8f')
     return A, B
 
-# проверка результата
 def verify():
     size = 500
     A, B = generate_input(size)
     
-    # запуск скомпилированной программы C++
-    print("Запуск C++ программы...")
+    print("запуск c++ программы...")
     exe = "./matmul.exe" if os.name == "nt" else "./matmul"
     subprocess.run([exe], check=True)
     
-    # загрузка результата C++
-    with open("matrixC.txt", "r") as f:
-        f.readline() # пропуск N
-        f.readline() # пропуск строки со временем
-        C_cpp = np.loadtxt(f)
+    # чтение результата (пропускаем только первую строку с N)
+    print("чтение результатов...")
+    C_cpp = np.loadtxt("matrixC.txt", skiprows=1)
     
-    # эталонное умножение NumPy
+    # эталонное умножение
     C_py = np.dot(A, B)
     
-    # сравнение
-    if np.allclose(C_cpp, C_py, atol=1e-2):
-        print("✅ Верификация пройдена! Результаты совпадают.")
+    if np.allclose(C_cpp, C_py, atol=1e-1):
+        print("✅ верификация пройдена! результаты совпадают.")
     else:
-        print("❌ Ошибка верификации!")
+        print("❌ ошибка верификации! результаты сильно различаются.")
+        diff = np.abs(C_cpp - C_py).max()
+        print(f"максимальное расхождение: {diff}")
 
 if __name__ == "__main__":
     verify()

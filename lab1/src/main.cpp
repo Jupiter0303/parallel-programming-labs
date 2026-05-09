@@ -2,7 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
-#include <chrono> // для замера времени
+#include <chrono>
 
 using namespace std;
 
@@ -15,13 +15,16 @@ void readMatrix(const string& filename, vector<double>& matrix, int& N) {
     for (int i = 0; i < N * N; i++) file >> matrix[i];
 }
 
-// запись матрицы и времени выполнения в файл
-void writeMatrix(const string& filename, const vector<double>& matrix, int N, double time_ms) {
+// запись только чисел в файл для надежной верификации
+void writeMatrix(const string& filename, const vector<double>& matrix, int N) {
     ofstream file(filename);
     file << N << "\n";
-    file << "Время: " << time_ms << " мс\n";
+    // устанавливаем высокую точность вывода
+    file << fixed << setprecision(8); 
     for (int i = 0; i < N; i++) {
-        for (int j = 0; j < N; j++) file << matrix[i * N + j] << " ";
+        for (int j = 0; j < N; j++) {
+            file << matrix[i * N + j] << " ";
+        }
         file << "\n";
     }
 }
@@ -36,10 +39,8 @@ int main() {
 
     C.assign(N * N, 0.0);
 
-    // начало замера времени
     auto start = chrono::high_resolution_clock::now();
 
-    // оптимизированный порядок циклов i-k-j (лучше для кэша)
     for (int i = 0; i < N; i++) {
         for (int k = 0; k < N; k++) {
             double temp = A[i * N + k];
@@ -49,12 +50,12 @@ int main() {
         }
     }
 
-    // конец замера времени
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, milli> elapsed = end - start;
 
-    writeMatrix("matrixC.txt", C, N, elapsed.count());
+    writeMatrix("matrixC.txt", C, N);
 
-    cout << "Расчет окончен. Время: " << elapsed.count() << " мс" << endl;
+    // выводим время в консоль, а не в файл
+    cout << "расчет окончен. время: " << elapsed.count() << " мс" << endl;
     return 0;
 }
