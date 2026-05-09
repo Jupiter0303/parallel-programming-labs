@@ -64,16 +64,16 @@ int main(int argc, char* argv[]) {
     if (rank != 0) B.resize(N * N);
 
     // 3. рассылка данных
-    // матрицу B рассылаем целиком всем (Broadcast)
+    // матрицу B рассылаем целиком всем
     MPI_Bcast(B.data(), N * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
-    // матрицу A раздаем частями (Scatterv)
+    // матрицу A раздаем частями
     MPI_Scatterv(A.data(), sendcounts.data(), displs.data(), MPI_DOUBLE, 
                  local_A.data(), local_rows * N, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     MPI_Barrier(MPI_COMM_WORLD);
     double start_time = MPI_Wtime();
 
-    // 4. вычисления (оптимизированный i-k-j)
+    // 4. вычисления
     for (int i = 0; i < local_rows; i++) {
         for (int k = 0; k < N; k++) {
             double temp = local_A[i * N + k];
@@ -86,7 +86,7 @@ int main(int argc, char* argv[]) {
     MPI_Barrier(MPI_COMM_WORLD);
     double end_time = MPI_Wtime();
 
-    // 5. сбор результатов (Gatherv)
+    // 5. сбор результатов
     if (rank == 0) C.resize(N * N);
     MPI_Gatherv(local_C.data(), local_rows * N, MPI_DOUBLE, 
                 C.data(), sendcounts.data(), displs.data(), MPI_DOUBLE, 0, MPI_COMM_WORLD);
