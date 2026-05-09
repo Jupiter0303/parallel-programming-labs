@@ -67,3 +67,14 @@ vcpkg_installed/
 # test output & cache
 Testing/
 .cache/
+
+
+*.exe
+matmul
+*.o
+*.obj
+
+*.txt
+*.csv
+
+.vscode/
